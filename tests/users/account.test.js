@@ -39,3 +39,67 @@ describe("getPastPurchases", () => {
     );
   });
 });
+
+describe("createAccount", () => {
+  let newEmailAddress = "newuser2@test.com";
+  beforeEach(() => {
+    jest.spyOn(users, "userExists").mockResolvedValue(false);
+    jest.spyOn(users, "createUserId").mockReturnValue(2);
+  });
+  test("Returns user data when account is created successfully", () => {
+    expect.hasAssertions();
+
+    return account.createAccount(newEmailAddress).then((userAccount) => {
+      expect(userAccount).toStrictEqual({
+        data: {
+          userId: 2,
+          username: newEmailAddress,
+        },
+      });
+    });
+  });
+
+  test("Returns user data when account is created successfully (async/await)", async () => {
+    expect.hasAssertions();
+
+    const userAccount = await account.createAccount(newEmailAddress);
+
+    expect(userAccount).toStrictEqual({
+      data: {
+        userId: 2,
+        username: newEmailAddress,
+      },
+    });
+  });
+
+  test("Returns user data when account is created successfully (resolves)", async () => {
+    expect.hasAssertions();
+
+    return expect(
+      account.createAccount(newEmailAddress)
+    ).resolves.toStrictEqual({
+      data: {
+        userId: 2,
+        username: newEmailAddress,
+      },
+    });
+  });
+
+  test("Returns error if user already exist", () => {
+    jest.spyOn(users, "userExists").mockResolvedValue(true);
+    expect.hasAssertions();
+
+    return expect(account.createAccount(newEmailAddress)).rejects.toStrictEqual(
+      "User already exists"
+    );
+  });
+
+  test("Returns error if user already exist (async/await)", async () => {
+    jest.spyOn(users, "userExists").mockResolvedValue(true);
+    expect.hasAssertions();
+
+    await expect(account.createAccount(newEmailAddress)).rejects.toStrictEqual(
+      "User already exists"
+    );
+  });
+});
