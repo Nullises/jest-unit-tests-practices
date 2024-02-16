@@ -1,4 +1,5 @@
-const { Event, getTagLine } = require("../../js/events/event");
+const { InvalidEventNameError } = require("../../js/error-handling/exceptions");
+const { Event, getTagLine, createEvent } = require("../../js/events/event");
 
 test("Return Sold Out tagline when no tickets left", () => {
   // We create a new event, and the last parameters (tickets remaining)
@@ -10,4 +11,24 @@ test("Return Sold Out tagline when no tickets left", () => {
 
   // We expect that the result will be to the sold out message
   expect(tagline).toBe("Event Sold Out!");
+});
+
+describe("createEvent", () => {
+  test("Throw error when name is not a string", () => {
+    expect(() => createEvent(1, 23, 40.0)).toThrow(
+      new InvalidEventNameError("Event name cannot exceed 200 characters")
+    );
+  });
+
+  test("Throw error when price is not a number", () => {
+    expect(() => createEvent("Event", "23", 40.0)).toThrow(
+      new InvalidEventNameError("Event price must be more or equal to 0")
+    );
+  });
+
+  test("Throw error when available events is not a number", () => {
+    expect(() => createEvent("Event", 23.5, "40.0")).toThrow(
+      new InvalidEventNameError("Event tickets must be more than 0")
+    );
+  });
 });
